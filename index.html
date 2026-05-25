@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>RoadLiner Express | Book Bus Tickets</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(145deg, #e9eef3 0%, #dce3ec 100%);
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+    }
+
+    /* main container */
+    .booking-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* header section */
+    .hero {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1A2A3F, #2C3E50);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+      display: inline-block;
+    }
+
+    .hero .tagline {
+      color: #4a627a;
+      margin-top: 0.5rem;
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    /* card style */
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(0px);
+      border-radius: 32px;
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.02);
+      padding: 1.8rem;
+      transition: all 0.2s ease;
+    }
+
+    /* two column layout */
+    .booking-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .search-section {
+      flex: 1.2;
+      min-width: 280px;
+    }
+
+    .buses-section {
+      flex: 2;
+      min-width: 320px;
+    }
+
+    /* form styling */
+    .form-group {
+      margin-bottom: 1.4rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #2c3e4f;
+      margin-bottom: 0.5rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      background-color: white;
+      transition: 0.2s;
+      outline: none;
+      font-weight: 500;
+    }
+
+    input:focus, select:focus {
+      border-color: #2c7da0;
+      box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.2);
+    }
+
+    .search-btn {
+      background: #1e3b4a;
+      color: white;
+      border: none;
+      padding: 0.9rem 1.2rem;
+      width: 100%;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 0.5rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    .search-btn:hover {
+      background: #0f2c38;
+      transform: scale(0.98);
+    }
+
+    /* bus cards */
+    .bus-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      max-height: 600px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .bus-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.2rem 1.5rem;
+      border: 1px solid #eef2f8;
+      transition: all 0.2s;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .bus-card:hover {
+      border-color: #cbdde9;
+      box-shadow: 0 12px 20px -12px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .bus-info {
+      flex: 2;
+      min-width: 180px;
+    }
+
+    .bus-name {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #1e2f3c;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bus-type {
+      background: #eef2ff;
+      color: #1e4a6e;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 30px;
+    }
+
+    .route {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #4b6a7c;
+      flex-wrap: wrap;
+    }
+
+    .time {
+      font-weight: 700;
+      color: #1f3e48;
+    }
+
+    .price {
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: #1f6392;
+    }
+
+    .seat-badge {
+      background: #f0f7fa;
+      border-radius: 30px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    .book-btn {
+      background: #2c7da0;
+      border: none;
+      padding: 10px 26px;
+      border-radius: 40px;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .book-btn:hover:not(:disabled) {
+      background: #1f5e7a;
+      transform: scale(0.96);
+    }
+
+    .book-btn:disabled {
+      background: #b9cfdf;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* ticket summary modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      max-width: 450px;
+      width: 90%;
+      border-radius: 40px;
+      padding: 2rem;
+      text-align: center;
+      animation: fadeUp 0.25s ease;
+      box-shadow: 0 30px 40px rgba(0,0,0,0.2);
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-content h3 {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      color: #1e3b4a;
+    }
+
+    .ticket-detail {
+      background: #f8fafc;
+      border-radius: 28px;
+      padding: 1rem;
+      margin: 1rem 0;
+      text-align: left;
+    }
+
+    .close-modal {
+      background: #eef2f8;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    .confirm-btn {
+      background: #2c7da0;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 40px;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 12px;
+      cursor: pointer;
+    }
+
+    .empty-message {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #6b8ea0;
+      font-weight: 500;
+      background: #fefefe;
+      border-radius: 32px;
+    }
+
+    /* status messages */
+    .toast-msg {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 60px;
+      font-weight: 500;
+      z-index: 1100;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      animation: fadeInOut 3s forwards;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; bottom: 0; }
+      15% { opacity: 1; bottom: 20px; }
+      85% { opacity: 1; bottom: 20px; }
+      100% { opacity: 0; bottom: 0; visibility: hidden; }
+    }
+
+    hr {
+      margin: 1rem 0;
+      border: 0;
+      height: 1px;
+      background: #e2edf2;
+    }
+
+    @media (max-width: 800px) {
+      body { padding: 1rem; }
+      .bus-card { flex-direction: column; align-items: flex-start; }
+      .book-btn { align-self: stretch; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="booking-container">
+  <div class="hero">
+    <h1>✈︎ RoadLiner Express</h1>
+    <div class="tagline">smart, seamless & comfortable bus travel — book in seconds</div>
+  </div>
+
+  <div class="booking-grid">
+    <!-- left panel: search & filters -->
+    <div class="search-section">
+      <div class="card">
+        <h3 style="margin-bottom: 1.2rem; font-weight: 700; color:#243b4a;">Find your ride</h3>
+        <div class="form-group">
+          <label>📍 From</label>
+          <input type="text" id="fromCity" placeholder="e.g., New York" value="Chicago">
+        </div>
+        <div class="form-group">
+          <label>📍 To</label>
+          <input type="text" id="toCity" placeholder="e.g., Boston" value="Detroit">
+        </div>
+        <div class="form-group">
+          <label>📅 Travel Date</label>
+          <input type="date" id="travelDate">
+        </div>
+        <div class="form-group">
+          <label>👥 Passengers</label>
+          <select id="passengers">
+            <option value="1">1 Passenger</option>
+            <option value="2" selected>2 Passengers</option>
+            <option value="3">3 Passengers</option>
+            <option value="4">4 Passengers</option>
+            <option value="5">5 Passengers</option>
+          </select>
+        </div>
+        <button class="search-btn" id="searchBusesBtn">🔍 Search Buses</button>
+        <hr>
+        <div style="font-size: 0.75rem; color: #5e7f96; text-align: center;">
+          <span>✔️ Real-time seat availability</span><br>
+          <span>✔️ Instant digital ticket</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- right panel: available buses -->
+    <div class="buses-section">
+      <div class="card" style="padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 1rem;">
+          <h3 style="font-weight: 700;">🚍 Available Buses</h3>
+          <span id="busCountBadge" style="background:#eef2f8; padding:4px 12px; border-radius:40px; font-size:0.8rem;">0 results</span>
+        </div>
+        <div id="busListContainer" class="bus-list">
+          <div class="empty-message">✨ Use the search panel <br> to find buses on your route</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for ticket confirmation -->
+<div id="ticketModal" class="modal">
+  <div class="modal-content">
+    <h3>🎫 Confirm Booking</h3>
+    <div id="modalTicketDetails" class="ticket-detail"></div>
+    <button id="confirmBookingBtn" class="confirm-btn">✅ Confirm & Pay</button>
+    <button id="closeModalBtn" class="close-modal">Cancel</button>
+  </div>
+</div>
+
+<script>
+  // ---------- BUS DATABASE (mock) ----------
+  const busesDatabase = [
+    { id: "B001", name: "StarLiner", type: "Luxury AC", from: "Chicago", to: "Detroit", departure: "08:30 AM", arrival: "02:15 PM", price: 49, seatsTotal: 40, bookedSeats: 12 },
+    { id: "B002", name: "Metro Rider", type: "Semi-Sleeper", from: "Chicago", to: "Detroit", departure: "11:45 AM", arrival: "05:30 PM", price: 39, seatsTotal: 38, bookedSeats: 8 },
+    { id: "B003", name: "Windy Express", type: "AC Sleeper", from: "Chicago", to: "Detroit", departure: "10:00 PM", arrival: "03:45 AM", price: 55, seatsTotal: 32, bookedSeats: 20 },
+    { id: "B004", name: "GreatLakes Transit", type: "Standard", from: "New York", to: "Boston", departure: "07:15 AM", arrival: "12:30 PM", price: 45, seatsTotal: 44, bookedSeats: 5 },
+    { id: "B005", name: "Harbor City", type: "Luxury", from: "New York", to: "Boston", departure: "02:20 PM", arrival: "07:10 PM", price: 59, seatsTotal: 36, bookedSeats: 10 },
+    { id: "B006", name: "Beeline Coach", type: "Economy", from: "Boston", to: "Philadelphia", departure: "09:00 AM", arrival: "12:45 PM", price: 32, seatsTotal: 48, bookedSeats: 15 },
+    { id: "B007", name: "NightOwl", type: "Sleeper", from: "Chicago", to: "Detroit", departure: "11:30 PM", arrival: "05:10 AM", price: 61, seatsTotal: 30, bookedSeats: 6 },
+    { id: "B008", name: "Maple Leaf", type: "AC", from: "Detroit", to: "Chicago", departure: "06:20 AM", arrival: "11:55 AM", price: 48, seatsTotal: 42, bookedSeats: 20 },
+  ];
+
+  // Global state: currently selected bus & passenger count & search context
+  let currentSelectedBus = null;
+  let currentPassengerCount = 2;
+  let lastSearch = { from: "", to: "", date: "" };
+
+  // Helper: get available seats for a bus
+  function getAvailableSeats(bus) {
+    return bus.seatsTotal - bus.bookedSeats;
+  }
+
+  // core search function based on from / to (case insensitive)
+  function searchBuses(fromVal, toVal) {
+    if (!fromVal || !toVal) return [];
+    const normalizedFrom = fromVal.trim().toLowerCase();
+    const normalizedTo = toVal.trim().toLowerCase();
+    return busesDatabase.filter(bus => 
+      bus.from.toLowerCase() === normalizedFrom && bus.to.toLowerCase() === normalizedTo
+    );
+  }
+
+  // render bus cards into container
+  function renderBuses(busesArray, requestedPassengers) {
+    const container = document.getElementById('busListContainer');
+    const badge = document.getElementById('busCountBadge');
+    if (!busesArray.length) {
+      container.innerHTML = `<div class="empty-message">🚌 No direct buses found from ${lastSearch.from || "origin"} to ${lastSearch.to || "destination"}.<br> Try different cities ✨</div>`;
+      badge.innerText = "0 results";
+      return;
+    }
+    badge.innerText = `${busesArray.length} bus${busesArray.length !== 1 ? 'es' : ''}`;
+    
+    container.innerHTML = busesArray.map(bus => {
+      const available = getAvailableSeats(bus);
+      const isAvailable = available >= requestedPassengers;
+      let seatStatusText = `${available} seats left`;
+      if (!isAvailable) seatStatusText = `❗ Only ${available} seats (need ${requestedPassengers})`;
+      
+      return `
+        <div class="bus-card" data-bus-id="${bus.id}">
+          <div class="bus-info">
+            <div class="bus-name">
+              ${bus.name} 
+              <span class="bus-type">${bus.type}</span>
+            </div>
+            <div class="route">
+              <span>🚌 ${bus.departure} ➝ ${bus.arrival}</span>
+              <span>📍 ${bus.from} → ${bus.to}</span>
+            </div>
+            <div class="seat-badge">
+              🪑 ${seatStatusText}
+            </div>
+          </div>
+          <div style="text-align: right; min-width: 110px;">
+            <div class="price">$${bus.price}</div>
+            <div style="font-size: 12px;">per seat</div>
+            <button class="book-btn" data-id="${bus.id}" ${!isAvailable ? 'disabled' : ''}>
+              ${isAvailable ? 'Select Seats' : 'Sold Out'}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // attach event listeners to each book button
+    document.querySelectorAll('.book-btn[data-id]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const busId = btn.getAttribute('data-id');
+        const bus = busesArray.find(b => b.id === busId);
+        if (bus && getAvailableSeats(bus) >= currentPassengerCount) {
+          openBookingModal(bus);
+        } else {
+          showToast(`🚫 Not enough seats for ${currentPassengerCount} passenger(s).`, 2000);
+        }
+      });
+    });
+  }
+
+  // open modal with bus and passenger details
+  function openBookingModal(bus) {
+    currentSelectedBus = bus;
+    const passengers = currentPassengerCount;
+    const totalPrice = bus.price * passengers;
+    const modalDetailsDiv = document.getElementById('modalTicketDetails');
+    modalDetailsDiv.innerHTML = `
+      <div><strong>${bus.name}</strong> (${bus.type})</div>
+      <div>📍 ${bus.from} → ${bus.to}</div>
+      <div>⏱️ Depart: ${bus.departure} | Arrival: ${bus.arrival}</div>
+      <div>👥 Passengers: ${passengers}</div>
+      <div>💰 Fare: $${bus.price} x ${passengers} = <strong>$${totalPrice}</strong></div>
+      <div style="margin-top:8px;">🎟️ Seats available: ${getAvailableSeats(bus)}</div>
+    `;
+    document.getElementById('ticketModal').style.display = 'flex';
+  }
+
+  // confirmation -> update booked seats, show success, refresh list
+  function confirmBooking() {
+    if (!currentSelectedBus) return;
+    const needed = currentPassengerCount;
+    const bus = currentSelectedBus;
+    const availableBefore = getAvailableSeats(bus);
+    if (availableBefore < needed) {
+      showToast(`❌ Sorry, seats changed! Only ${availableBefore} left.`, 2500);
+      closeModal();
+      refreshSearchResults();   // refresh due to seat changes
+      return;
+    }
+    // simulate booking: increase bookedSeats
+    bus.bookedSeats += needed;
+    // store updated booking in localStorage or just state (in-memory)
+    showToast(`✅ Booking confirmed! ${needed} ticket(s) for ${bus.name} from ${bus.from} to ${bus.to}. Total $${bus.price * needed}. Ticket sent via SMS/Email.`, 3500);
+    closeModal();
+    refreshSearchResults(); // re-render with updated availability
+    currentSelectedBus = null;
+  }
+
+  // refresh search results based on last search (preserve filters)
+  function refreshSearchResults() {
+    if (lastSearch.from && lastSearch.to) {
+      const fromCity = lastSearch.from;
+      const toCity = lastSearch.to;
+      const results = searchBuses(fromCity, toCity);
+      renderBuses(results, currentPassengerCount);
+    } else {
+      // fallback if no search performed yet: show nothing / placeholder
+      const container = document.getElementById('busListContainer');
+      container.innerHTML = `<div class="empty-message">🔍 Use search panel to see buses</div>`;
+      document.getElementById('busCountBadge').innerText = "0 results";
+    }
+  }
+
+  // handle search action
+  function performSearch() {
+    const fromInput = document.getElementById('fromCity').value.trim();
+    const toInput = document.getElementById('toCity').value.trim();
+    const dateInput = document.getElementById('travelDate').value;
+    const passengers = parseInt(document.getElementById('passengers').value, 10);
+    currentPassengerCount = passengers;
+
+    if (!fromInput || !toInput) {
+      showToast("⚠️ Please enter both departure and arrival cities", 2000);
+      return;
+    }
+    if (fromInput.toLowerCase() === toInput.toLowerCase()) {
+      showToast("🔄 Origin and destination cannot be the same!", 2000);
+      return;
+    }
+    // store search context
+    lastSearch = { from: fromInput, to: toInput, date: dateInput };
+    const matchedBuses = searchBuses(fromInput, toInput);
+    renderBuses(matchedBuses, currentPassengerCount);
+    if (matchedBuses.length === 0) {
+      showToast(`No buses found from ${fromInput} to ${toInput}. Try different route.`, 3000);
+    } else {
+      showToast(`🎉 ${matchedBuses.length} bus(es) found!`, 1800);
+    }
+  }
+
+  // date default: set today + 1 day as default (user-friendly)
+  function setDefaultDate() {
+    const datePicker = document.getElementById('travelDate');
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const yyyy = tomorrow.getFullYear();
+    const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const dd = String(tomorrow.getDate()).padStart(2, '0');
+    datePicker.value = `${yyyy}-${mm}-${dd}`;
+  }
+
+  // simple toast notification
+  function showToast(message, duration = 2500) {
+    let existingToast = document.querySelector('.toast-msg');
+    if (existingToast) existingToast.remove();
+    const toast = document.createElement('div');
+    toast.className = 'toast-msg';
+    toast.innerText = message;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      if (toast && toast.parentNode) toast.remove();
+    }, duration);
+  }
+
+  function closeModal() {
+    document.getElementById('ticketModal').style.display = 'none';
+  }
+
+  // initial load: Prefill demo city values & maybe show default search
+  function initializeUI() {
+    setDefaultDate();
+    // default passenger select from dropdown
+    const passengerSelect = document.getElementById('passengers');
+    passengerSelect.addEventListener('change', (e) => {
+      currentPassengerCount = parseInt(e.target.value, 10);
+      if (lastSearch.from && lastSearch.to) {
+        refreshSearchResults();   // re-evaluate seat availability
+      }
+    });
+    // attach search event
+    const searchBtn = document.getElementById('searchBusesBtn');
+    searchBtn.addEventListener('click', performSearch);
+    // optional: pressing Enter on inputs? we add global
+    const fromCityEl = document.getElementById('fromCity');
+    const toCityEl = document.getElementById('toCity');
+    [fromCityEl, toCityEl].forEach(el => {
+      el.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performSearch();
+      });
+    });
+    // modal controls
+    const modal = document.getElementById('ticketModal');
+    const closeBtn = document.getElementById('closeModalBtn');
+    const confirmBtn = document.getElementById('confirmBookingBtn');
+    closeBtn.addEventListener('click', closeModal);
+    confirmBtn.addEventListener('click', confirmBooking);
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    // initial search with default demo values: Chicago -> Detroit
+    // but also we want pre-filled values to show buses immediately (clear UI)
+    // set from, to that exist in DB for demo
+    document.getElementById('fromCity').value = "Chicago";
+    document.getElementById('toCity').value = "Detroit";
+    // perform search on load for better UX
+    performSearch();
+  }
+
+  // start everything
+  initializeUI();
+</script>
+</body>
+</html>
